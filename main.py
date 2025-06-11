@@ -20,3 +20,8 @@ test_df = pd.merge(  test_df_missing_target
                    , suffixes=('', '_target')).copy()
 
 print (test_df.head())
+
+# clean data
+
+clean_data(train_df, is_train=True)
+clean_data(test_df, is_train=False)
