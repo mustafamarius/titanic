@@ -3,15 +3,16 @@ Load, preprocess, prepare, and save the Titanic dataset.
 """
 
 import pandas as pd
+import os
 
-def load_data():
+def load_data(data_dir, file_name):
     """
     Load the Titanic dataset from a CSV file.
     
     Returns:
         DataFrame: The loaded Titanic dataset.
     """
-    pass
+    return pd.read_csv(os.path.join(data_dir,file_name),index_col=0)
        
 def clean_data(df):
     """
