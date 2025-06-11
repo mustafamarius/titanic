@@ -6,6 +6,8 @@ import pandas as pd
 import os
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler,OneHotEncoder
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def load_data(data_dir, file_name):
