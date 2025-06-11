@@ -16,3 +16,6 @@ models/*.pkl
 # MAC 
 .DS_Store
 
+# Env
+.env
+.envrc

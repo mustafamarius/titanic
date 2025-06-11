@@ -1,7 +1,17 @@
 """
 Save and load models, preprocessors
 """
+import os
+import pickle
+from titanic.params import MODEL_FOLDER
 
+def ensure_model_folder():
+    """
+    Ensure that the model folder exists.
+    """
+    if not os.path.exists(MODEL_FOLDER):
+        os.makedirs(MODEL_FOLDER+"s")
+ensure_model_folder() 
 
 def save_model(model, path: str):
     """
@@ -11,7 +21,9 @@ def save_model(model, path: str):
         model: The model to save.
         path (str): The file path where the model will be saved.
     """
-    pass
+    final_path = os.path.join(MODEL_FOLDER, path)
+    with open(final_path, 'wb') as f:
+        pickle.dump(model, f)
 
 def load_model(path: str):
     """
@@ -23,4 +35,7 @@ def load_model(path: str):
     Returns:
         The loaded model.
     """
-    pass
+    final_path = os.path.join(MODEL_FOLDER, path)
+    with open(final_path, 'rb') as f:
+        model = pickle.load(f)
+    return model

@@ -1,18 +1,36 @@
 """
 Load, preprocess, prepare, and save the Titanic dataset.
 """
-
+import os
 import pandas as pd
+from titanic.params import DATA_FOLDER,NUMERIC_FEATURES,CAT_FEATURES
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
 
-def load_data():
+def load_data(train: bool = True) -> pd.DataFrame:
     """
     Load the Titanic dataset from a CSV file.
     
     Returns:
         DataFrame: The loaded Titanic dataset.
     """
-    pass
-       
+    if not os.path.exists(DATA_FOLDER):
+        raise FileNotFoundError(f"The data folder '{DATA_FOLDER}' does not exist.")
+    # Without ternary operator
+    # if train == True : 
+    #     name = 'train'
+    # else:
+    #     name = 'test'
+    # Using ternary operator for brevity
+    name = 'train' if train else 'test'
+    df = pd.read_csv(os.path.join(DATA_FOLDER, f'{name}.csv'),index_col='PassengerId')
+    if not train :
+        y_test = pd.read_csv(os.path.join(DATA_FOLDER,"gender_submission.csv"), index_col='PassengerId')
+        df = pd.merge(df,y_test,left_index=True, right_index=True, how='left')
+    return df
+    
 def clean_data(df):
     """
     clean the Titanic dataset.
@@ -23,16 +41,52 @@ def clean_data(df):
     Returns:
         DataFrame: The preprocessed Titanic dataset.
     """
-    pass
+    
+    return    df.drop(columns=['Name', 'Ticket', 'Cabin'])\
+                .dropna()\
+                .drop_duplicates()
+        
 
-def prepare_data(df:pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]: 
+def prepare_data(df:pd.DataFrame ,fit=True) -> tuple[pd.DataFrame, pd.Series]: 
     """
     Prepare the Titanic dataset for training.
     
     Args:
-        df (DataFrame): The preprocessed Titanic dataset.
+        df (DataFrame): The cleaned Titanic dataset.
         
     Returns:
         tuple: A tuple containing [X,y] the features DataFrame and the target Series.
     """
-    pass
+    X,y = df.drop(columns=['Survived']), df['Survived']
+    numeric_transformer = Pipeline(steps=[
+                                        ('imputer', SimpleImputer(strategy='mean')),
+                                        ('scaler', StandardScaler())
+                                    ])  
+    cat_pipeline = Pipeline(steps=[
+                                        ('imputer', SimpleImputer(strategy='most_frequent')),
+                                        ('encoder', OneHotEncoder(sparse_output=False, handle_unknown='ignore', drop='first'))
+                                    ])
+    preprocessor = ColumnTransformer(
+                                        transformers=[
+                                            ('num', numeric_transformer, NUMERIC_FEATURES),
+                                            ('cat', cat_pipeline, CAT_FEATURES)
+                                        ],
+                                        remainder='passthrough'  # Keep other columns as they are
+                                    ).set_output(transform="pandas")
+    if fit : preprocessor.fit(X)
+    X_scaled = preprocessor.transform(X)
+    return X_scaled, y
+
+
+if __name__ == "__main__":
+    # Example usage
+    df = load_data(train=False)
+    print(df.shape)
+    df = clean_data(df)
+    X, y = prepare_data(df)
+    print(X.head())
+    print(y.head())
+    
+    # # Save the processed data
+    # X.to_csv('titanic_features.csv', index=False)
+    # y.to_csv('titanic_target.csv', index=False)
