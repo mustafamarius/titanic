@@ -19,9 +19,24 @@ test_df = pd.merge(  test_df_missing_target
                    , how='left'
                    , suffixes=('', '_target')).copy()
 
-print (test_df.head())
+
 
 # clean data
 
-clean_data(train_df, is_train=True)
-clean_data(test_df, is_train=False)
+clean_data(train_df)
+clean_data(test_df)
+
+#print (train_df.head())
+#print (test_df.head())
+
+
+x_train , y_train =  prepare_data(train_df)
+x_test, y_test = prepare_data(test_df)
+
+#print(x_train.head())
+#print (y_train)
+
+#print(x_test.head())
+#print (y_test.head())
+
+
