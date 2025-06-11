@@ -3,7 +3,7 @@
 """
 import pandas as pd
 from titanic.data import load_data,clean_data,prepare_data
-from titanic.registry import save_model
+from titanic.registry import save_model,load_model
 from titanic.train import train_model, evaluate_model, optimize_model
 
 DATA_DIR = "data/"
@@ -46,6 +46,11 @@ best_model = optimize_model(lin_model, x_train, y_train)
 print("best score:")
 print(evaluate_model(best_model, x_test, y_test))
 
+path = "best_logistic_model.pkl"
+save_model(best_model, path)
+
+new_model = load_model(path)
+print(f"Loaded object type: {type(new_model)}")
 
 
 
