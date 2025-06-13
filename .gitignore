@@ -19,3 +19,7 @@ models/*.pkl
 # Env
 .env
 .envrc
+
+# Mlflow 
+mlruns/
+mlartifacts/

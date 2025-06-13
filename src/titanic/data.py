@@ -3,11 +3,13 @@ Load, preprocess, prepare, and save the Titanic dataset.
 """
 import os
 import pandas as pd
-from titanic.params import DATA_FOLDER,NUMERIC_FEATURES,CAT_FEATURES
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from titanic.registry import load_model, save_model
+from titanic.params import DATA_FOLDER,NUMERIC_FEATURES,CAT_FEATURES
+
 
 def load_data(train: bool = True) -> pd.DataFrame:
     """
@@ -47,7 +49,7 @@ def clean_data(df):
                 .drop_duplicates()
         
 
-def prepare_data(df:pd.DataFrame ,fit=True) -> tuple[pd.DataFrame, pd.Series]: 
+def prepare_data(df:pd.DataFrame ,fit=True, survive=True) -> tuple[pd.DataFrame, pd.Series]: 
     """
     Prepare the Titanic dataset for training.
     
@@ -57,23 +59,30 @@ def prepare_data(df:pd.DataFrame ,fit=True) -> tuple[pd.DataFrame, pd.Series]:
     Returns:
         tuple: A tuple containing [X,y] the features DataFrame and the target Series.
     """
-    X,y = df.drop(columns=['Survived']), df['Survived']
-    numeric_transformer = Pipeline(steps=[
-                                        ('imputer', SimpleImputer(strategy='mean')),
-                                        ('scaler', StandardScaler())
-                                    ])  
-    cat_pipeline = Pipeline(steps=[
-                                        ('imputer', SimpleImputer(strategy='most_frequent')),
-                                        ('encoder', OneHotEncoder(sparse_output=False, handle_unknown='ignore', drop='first'))
-                                    ])
-    preprocessor = ColumnTransformer(
-                                        transformers=[
-                                            ('num', numeric_transformer, NUMERIC_FEATURES),
-                                            ('cat', cat_pipeline, CAT_FEATURES)
-                                        ],
-                                        remainder='passthrough'  # Keep other columns as they are
-                                    ).set_output(transform="pandas")
-    if fit : preprocessor.fit(X)
+    if survive:
+        X,y = df.drop(columns=['Survived']), df['Survived']
+    else:
+        X, y = df, None
+    if fit :
+        numeric_transformer = Pipeline(steps=[
+                                            ('imputer', SimpleImputer(strategy='mean')),
+                                            ('scaler', StandardScaler())
+                                        ])  
+        cat_pipeline = Pipeline(steps=[
+                                            ('imputer', SimpleImputer(strategy='most_frequent')),
+                                            ('encoder', OneHotEncoder(sparse_output=False, handle_unknown='ignore', drop='first'))
+                                        ])
+        preprocessor = ColumnTransformer(
+                                            transformers=[
+                                                ('num', numeric_transformer, NUMERIC_FEATURES),
+                                                ('cat', cat_pipeline, CAT_FEATURES)
+                                            ],
+                                            remainder='passthrough'  # Keep other columns as they are
+                                        ).set_output(transform="pandas")
+        preprocessor.fit(X)
+        save_model(preprocessor, "preprocessor.pkl")
+    else:
+        preprocessor = load_model("preprocessor.pkl")
     X_scaled = preprocessor.transform(X)
     return X_scaled, y
 

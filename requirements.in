@@ -1,3 +1,13 @@
 # 
 pandas 
 scikit-learn
+
+# ML Registry
+mlflow
+
+# Web Framework
+fastapi
+uvicorn
+
+# logs
+loguru
