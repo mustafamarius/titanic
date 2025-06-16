@@ -11,3 +11,6 @@ uvicorn
 
 # logs
 loguru
+
+# Workflow Orchestration
+prefect
