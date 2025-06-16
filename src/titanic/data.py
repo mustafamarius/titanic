@@ -2,13 +2,17 @@
 Load, preprocess, prepare, and save the Titanic dataset.
 """
 import os
+
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from google.cloud import storage
+
 from titanic.registry import load_model, save_model
-from titanic.params import DATA_FOLDER,NUMERIC_FEATURES,CAT_FEATURES
+from titanic.params import DATA_FOLDER,NUMERIC_FEATURES,CAT_FEATURES, BUCKET_NAME
+
 
 
 def load_data(train: bool = True) -> pd.DataFrame:
@@ -87,6 +91,19 @@ def prepare_data(df:pd.DataFrame ,fit=True, survive=True) -> tuple[pd.DataFrame,
     return X_scaled, y
 
 
+def upload_data(data:pd.DataFrame, source_file_name: str) -> bool:
+    """Uploads a file to the bucket."""
+    destination_blob_name = f"titanic-data/{source_file_name}"
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(destination_blob_name)
+    # Convert DataFrame to CSV string
+    blob.upload_from_string(data.to_csv(index=False), content_type='text/csv')
+
+    print(
+        f"🔥 File {source_file_name} uploaded to {destination_blob_name}."
+    )
+
 if __name__ == "__main__":
     # Example usage
     df = load_data(train=False)
@@ -96,6 +113,7 @@ if __name__ == "__main__":
     print(X.head())
     print(y.head())
     
+    upload_data(X, 'titanic_features.csv')
     # # Save the processed data
     # X.to_csv('titanic_features.csv', index=False)
     # y.to_csv('titanic_target.csv', index=False)
