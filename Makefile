@@ -9,7 +9,7 @@ install :
 	@echo "✅ Application installed successfully. "
 
 .PHONY : train
-train : install
+train : 
 	@echo "Training the model..."
 	@echo "This may take a while, please be patient."
 	@echo "Running training script..."
@@ -40,4 +40,22 @@ test_api:
 # Docker
 docker_build:
 	@echo "Building Docker image..."
-	docker build -t myapp:latest .
+	docker build -t titanic_api:latest .
+
+login:
+	gcloud auth login 
+	gcloud auth configure-docker $(europe-west9)-docker.pkg.dev
+
+build_gcp:
+	docker build -t europe-west9-docker.pkg.dev/neon-bank-461713-j6/mustafa-repo/titanic_api:latest .
+
+docker_push:
+	docker push europe-west9-docker.pkg.dev/neon-bank-461713-j6/mustafa-repo/titanic_api:latest
+
+deploy: docker_push
+	gcloud run deploy titanic-api\
+		--image europe-west9-docker.pkg.dev/neon-bank-461713-j6/mustafa-repo/titanic_api:latest \
+		--platform managed \
+		--region europe-west9 \
+		--allow-unauthenticated \
+		--project neon-bank-461713-j6
