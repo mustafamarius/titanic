@@ -6,13 +6,6 @@ import pickle
 from google.cloud import storage
 from titanic.params import MODEL_FOLDER, BUCKET_NAME
 
-def ensure_model_folder():
-    """
-    Ensure that the model folder exists.
-    """
-    if not os.path.exists(MODEL_FOLDER):
-        os.makedirs(MODEL_FOLDER+"s")
-ensure_model_folder() 
 
 def save_model(model, path: str, cloud: bool = False):
     """

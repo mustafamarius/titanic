@@ -15,15 +15,17 @@ from titanic.params import DATA_FOLDER,NUMERIC_FEATURES,CAT_FEATURES, BUCKET_NAM
 
 
 
-def load_data(train: bool = True) -> pd.DataFrame:
+def load_data(train: bool = True, data_folder = None) -> pd.DataFrame:
     """
     Load the Titanic dataset from a CSV file.
     
     Returns:
         DataFrame: The loaded Titanic dataset.
     """
-    if not os.path.exists(DATA_FOLDER):
-        raise FileNotFoundError(f"The data folder '{DATA_FOLDER}' does not exist.")
+    if not data_folder:
+        data_folder = DATA_FOLDER
+    if not os.path.exists(data_folder):
+        raise FileNotFoundError(f"The data folder '{data_folder}' does not exist.")
     # Without ternary operator
     # if train == True : 
     #     name = 'train'
@@ -31,7 +33,7 @@ def load_data(train: bool = True) -> pd.DataFrame:
     #     name = 'test'
     # Using ternary operator for brevity
     name = 'train' if train else 'test'
-    df = pd.read_csv(os.path.join(DATA_FOLDER, f'{name}.csv'),index_col='PassengerId')
+    df = pd.read_csv(os.path.join(data_folder, f'{name}.csv'),index_col='PassengerId')
     if not train :
         y_test = pd.read_csv(os.path.join(DATA_FOLDER,"gender_submission.csv"), index_col='PassengerId')
         df = pd.merge(df,y_test,left_index=True, right_index=True, how='left')
