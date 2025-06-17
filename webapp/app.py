@@ -1,8 +1,4 @@
 import streamlit as st
-import pandas as pd
-from titanic.data import load_data, prepare_data, upload_data
-import matplotlib.pyplot as plt
-import seaborn as sns
 import requests
  
 
