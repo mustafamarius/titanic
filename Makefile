@@ -31,9 +31,9 @@ run_api:
 
 test_api:
 	@echo "Running API tests..."
-	curl -X 'GET' 'http://127.0.0.1:8000/' \
-		 -H 'accept: application/json'
-
+	curl -X 'GET' \
+  'http://127.0.0.1:8000/predict?PassengerId=123&Pclass=3&Name=John%20Smith&Sex=male&Age=27&SibSp=0&Parch=0&Ticket=A%2F5%2021171&Fare=7.25&Cabin=C85&Embarked=S' \
+  -H 'accept: application/json'
 
 ###################################################
 
@@ -41,3 +41,6 @@ test_api:
 docker_build:
 	@echo "Building Docker image..."
 	docker build -t myapp:latest .
+
+
+#

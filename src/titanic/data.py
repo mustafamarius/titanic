@@ -15,28 +15,22 @@ from titanic.params import DATA_FOLDER,NUMERIC_FEATURES,CAT_FEATURES, BUCKET_NAM
 
 
 
+
+DATA_FOLDER = os.path.join(os.path.dirname(__file__), '../../data')
+
 def load_data(train: bool = True, data_folder = None) -> pd.DataFrame:
-    """
-    Load the Titanic dataset from a CSV file.
-    
-    Returns:
-        DataFrame: The loaded Titanic dataset.
-    """
     if not data_folder:
         data_folder = DATA_FOLDER
     if not os.path.exists(data_folder):
         raise FileNotFoundError(f"The data folder '{data_folder}' does not exist.")
-    # Without ternary operator
-    # if train == True : 
-    #     name = 'train'
-    # else:
-    #     name = 'test'
-    # Using ternary operator for brevity
+    
     name = 'train' if train else 'test'
-    df = pd.read_csv(os.path.join(data_folder, f'{name}.csv'),index_col='PassengerId')
-    if not train :
-        y_test = pd.read_csv(os.path.join(DATA_FOLDER,"gender_submission.csv"), index_col='PassengerId')
-        df = pd.merge(df,y_test,left_index=True, right_index=True, how='left')
+    df = pd.read_csv(os.path.join(data_folder, f'{name}.csv'), index_col='PassengerId')
+    
+    if not train:
+        y_test = pd.read_csv(os.path.join(data_folder, "gender_submission.csv"), index_col='PassengerId')
+        df = pd.merge(df, y_test, left_index=True, right_index=True, how='left')
+    
     return df
     
 def clean_data(df):

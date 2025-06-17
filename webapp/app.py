@@ -20,9 +20,10 @@ st.markdown("""
 amount = st.slider("Select a number", min_value=0, max_value=100, value=50)
 if st.button("Click Me!") : 
     params = {"amount": amount}
-    answer = requests.get(url = f"http://127.0.0.1:8000/love", params=params)
+    answer = requests.get(url = f"http://127.0.0.1:8000/predict", params=params)
     if answer.status_code == 200:
-        st.success(f"❤️ {answer.json()['love']}")
+        st.success(f"❤️ {answer.json()['predict']} ❤️")
+    
 
 "### Add more functionality as needed."
 " # Dataframe Example"
@@ -70,11 +71,13 @@ st.write("### Would you survive the Titanic?")
 name = st.text_input("Enter your name:", value="John Doe")
 gender = st.selectbox("Select your Gender:", options=["Male", "Female", "Other"])
 age = st.slider("Select your Age:", min_value=0, max_value=100, value=30)
-class_ = st.selectbox("Select your Class:", options=["1st", "2nd", "3rd"])
+pclass = st.selectbox("Select your Class:", options=["1st", "2nd", "3rd"])
 embarked = st.selectbox("Select your Embarked Port:", options=["Cherbourg", "Queenstown", "Southampton"])
 fare = st.selectbox("Select your Ticket Fare:", options=["Low", "Medium", "High"])
 
 if st.button("Check if you would survive"):
     st.write("You would have survived the Titanic!")
     st.balloons()
+
+
 
