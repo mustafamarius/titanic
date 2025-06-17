@@ -237,7 +237,7 @@ prefect==1.4.1
     # via -r requirements.in
 proto-plus==1.26.1
     # via google-api-core
-protobuf==3.20
+protobuf==6.31.1
     # via
     #   google-api-core
     #   googleapis-common-protos
